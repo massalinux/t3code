@@ -22,7 +22,7 @@ import {
   type DesktopServerExposureState,
   type DesktopWslState,
   EnvironmentId,
-  resolveEnvironmentMachineKind,
+  resolveEnvironmentIcon,
 } from "@t3tools/contracts";
 import {
   isAtomCommandInterrupted,
@@ -230,7 +230,7 @@ function AccessSettings() {
                 <span className="flex min-w-0 items-center gap-2">
                   <EnvironmentMachineIcon
                     aria-hidden
-                    kind={resolveEnvironmentMachineKind(environment.serverConfig)}
+                    kind={resolveEnvironmentIcon(environment.serverConfig)}
                     className="size-3.5 shrink-0"
                   />
                   <span className="min-w-0 truncate">
@@ -1303,9 +1303,7 @@ function ConnectionsSettingsContent({
             icon={
               <EnvironmentMachineIcon
                 aria-hidden
-                kind={
-                  accessServerConfig ? resolveEnvironmentMachineKind(accessServerConfig) : "desktop"
-                }
+                kind={accessServerConfig ? resolveEnvironmentIcon(accessServerConfig) : "desktop"}
                 className="size-4"
               />
             }
@@ -1828,7 +1826,7 @@ function ConnectionsSettingsContent({
     <SettingsPageContainer>
       {desktopBridge ? (
         <SettingsSection id="this-app" title={gt("This app")}>
-          <LocalEnvironmentSetting />
+          <LocalEnvironmentSetting environment={primaryEnvironment} />
         </SettingsSection>
       ) : null}
       <SettingsSection

@@ -1,4 +1,4 @@
-import type { EnvironmentMachineKind } from "@t3tools/contracts";
+import type { EnvironmentIcon, EnvironmentMachineKind } from "@t3tools/contracts";
 import { msg } from "gt-react";
 import { CloudIcon, LaptopIcon, MonitorIcon, ServerIcon, type LucideProps } from "lucide-react";
 import type { FunctionComponent, SVGProps } from "react";
@@ -68,7 +68,8 @@ export function environmentMachineIcon(
 export function EnvironmentMachineIcon({
   kind,
   ...props
-}: LucideProps & { readonly kind: EnvironmentMachineKind }) {
+}: LucideProps & { readonly kind: EnvironmentIcon }) {
+  if (kind === "none") return null;
   const Icon = ICON_BY_KIND[kind];
   return <Icon {...props} />;
 }

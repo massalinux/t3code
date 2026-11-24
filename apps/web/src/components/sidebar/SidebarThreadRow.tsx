@@ -33,7 +33,7 @@ import {
   AuthOrchestrationOperateScope,
   type ContextMenuSource,
   type EnvironmentId,
-  type EnvironmentMachineKind,
+  type EnvironmentIcon,
   type ScopedThreadRef,
 } from "@t3tools/contracts";
 
@@ -272,7 +272,7 @@ function SidebarThreadTooltip({
   project: ProjectFaviconProject | null;
   projectDisplayName: string | null;
   environmentLabel: string | null;
-  environmentMachine: EnvironmentMachineKind;
+  environmentMachine: EnvironmentIcon;
   providerEntry: SidebarProviderEntry | null;
   providerEntryByInstanceId: ReadonlyMap<string, SidebarProviderEntry>;
   showInstanceBadge: boolean;
@@ -606,8 +606,9 @@ type SidebarThreadRowProps = {
   // Read at click time; a prop would re-render every row on entering or leaving a thread route.
   readOpensPullRequestsInRightPanel: () => boolean;
   jumpLabel: string | null;
+  isLocalEnvironment: boolean;
   environmentLabel: string | null;
-  environmentMachine: EnvironmentMachineKind;
+  environmentMachine: EnvironmentIcon;
   project: EnvironmentProject | null;
   projectDisplayName: string | null;
   providerEntryByInstanceId: ReadonlyMap<string, SidebarProviderEntry>;
@@ -1259,24 +1260,40 @@ const SidebarThreadRow = memo(function SidebarThreadRow(props: SidebarThreadRowP
     )
   ) : null;
 
+  const environmentMachineIcon = (
+    <EnvironmentMachineIcon
+      aria-hidden
+      kind={props.environmentMachine}
+      className="size-3.5 shrink-0 text-icon-muted"
+    />
+  );
+  const environmentLabel = props.isLocalEnvironment ? null : props.environmentLabel;
+  const trailingIcons = (
+    <span
+      aria-hidden
+      className="pointer-events-none ml-auto inline-flex shrink-0 items-center gap-1"
+    >
+      {environmentLabel === null ? environmentMachineIcon : null}
+      <SidebarProviderStack
+        thread={thread}
+        providerEntryByInstanceId={props.providerEntryByInstanceId}
+      />
+    </span>
+  );
   const diff = latestRunDiff(thread);
   // Only the trailing icons would remain, so the row moves them to the title line instead.
   const metaLineEmpty =
-    props.environmentLabel === null &&
+    environmentLabel === null &&
     prBadge === null &&
     issueBadge === null &&
     diff === null &&
     runningTerminalIds.length === 0;
   const metaLine = metaLineEmpty ? null : (
     <div className="mt-0.5 flex min-w-0 items-center gap-1.5 text-secondary-label text-xs">
-      {props.environmentLabel !== null ? (
+      {environmentLabel !== null ? (
         <>
-          <EnvironmentMachineIcon
-            aria-hidden
-            kind={props.environmentMachine}
-            className="size-3.5 shrink-0 text-icon-muted"
-          />
-          <span className="min-w-0 flex-1 truncate">{props.environmentLabel}</span>
+          {environmentMachineIcon}
+          <span className="min-w-0 flex-1 truncate">{environmentLabel}</span>
         </>
       ) : (
         <span className="flex-1" />
@@ -1290,25 +1307,10 @@ const SidebarThreadRow = memo(function SidebarThreadRow(props: SidebarThreadRowP
           <span className="text-diff-deletion-foreground">−{formatDiffCount(diff.deletions)}</span>
         </span>
       ) : null}
-      <span
-        aria-hidden
-        className="pointer-events-none ml-auto inline-flex shrink-0 items-center gap-1"
-      >
-        <SidebarProviderStack
-          thread={thread}
-          providerEntryByInstanceId={props.providerEntryByInstanceId}
-        />
-      </span>
+      {trailingIcons}
     </div>
   );
-  const titleLineIcons = metaLineEmpty ? (
-    <span aria-hidden className="inline-flex shrink-0 items-center gap-1">
-      <SidebarProviderStack
-        thread={thread}
-        providerEntryByInstanceId={props.providerEntryByInstanceId}
-      />
-    </span>
-  ) : null;
+  const titleLineIcons = metaLineEmpty ? trailingIcons : null;
 
   if (variant !== "card") {
     const multiline = variant === "folder-multiline";
@@ -1369,7 +1371,7 @@ const SidebarThreadRow = memo(function SidebarThreadRow(props: SidebarThreadRowP
               )}
               {draftIndicator}
               {title}
-              {multiline ? titleLineIcons : null}
+              {multiline ? titleLineIcons : environmentMachineIcon}
               {pinIndicator}
               {multiline ? null : terminalStatusIcon}
               {multiline ? null : issueBadge}
@@ -1752,7 +1754,7 @@ export const SidebarSearchResultRow = memo(function SidebarSearchResultRow(props
   project: EnvironmentProject | null;
   projectDisplayName: string | null;
   environmentLabel: string | null;
-  environmentMachine: EnvironmentMachineKind;
+  environmentMachine: EnvironmentIcon;
   providerEntryByInstanceId: ReadonlyMap<string, SidebarProviderEntry>;
   isHighlighted: boolean;
   isRouteActive: boolean;

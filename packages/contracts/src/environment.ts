@@ -42,7 +42,10 @@ export const ENVIRONMENT_MACHINE_KINDS = [
 ] as const;
 export const EnvironmentMachineKind = Schema.Literals(ENVIRONMENT_MACHINE_KINDS);
 export type EnvironmentMachineKind = typeof EnvironmentMachineKind.Type;
-export const isEnvironmentMachineKind = Schema.is(EnvironmentMachineKind);
+
+export const EnvironmentIcon = Schema.Literals([...ENVIRONMENT_MACHINE_KINDS, "none"]);
+export type EnvironmentIcon = typeof EnvironmentIcon.Type;
+export const isEnvironmentIcon = Schema.is(EnvironmentIcon);
 
 export const ExecutionEnvironmentPlatform = Schema.Struct({
   os: ExecutionEnvironmentPlatformOs,
@@ -169,6 +172,7 @@ export const ExecutionEnvironmentCapabilities = Schema.Struct({
   /** projects.listIgnoredFiles honors `query`. Older servers ignore it. */
   ignoredFileSearch: Schema.optionalKey(Schema.Boolean),
   environmentIcon: Schema.optionalKey(Schema.Boolean),
+  environmentIconNone: Schema.optionalKey(Schema.Boolean),
   desktopAppUpdate: Schema.optionalKey(Schema.Boolean),
   /** The desktop app switches update tracks when a server update request names one. */
   desktopAppChannelSwitch: Schema.optionalKey(Schema.Boolean),

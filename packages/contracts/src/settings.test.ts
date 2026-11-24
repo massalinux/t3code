@@ -417,6 +417,12 @@ describe("ServerSettings.sourceControlWritingStyle", () => {
 });
 
 describe("ServerSettings environment icon", () => {
+  it.each(["none", null] as const)("preserves %s in settings and patches", (environmentIcon) => {
+    const patch = { environmentIcon };
+    expect(decodeServerSettingsPatch(patch)).toEqual(patch);
+    expect(encodeServerSettings(decodeServerSettings(patch))).toMatchObject(patch);
+  });
+
   it("decodes a kind from a newer server as null instead of failing the snapshot", () => {
     expect(decodeServerSettings({ environmentIcon: "toaster" }).environmentIcon).toBeNull();
   });

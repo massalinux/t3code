@@ -4,7 +4,7 @@ import {
 } from "@t3tools/client-runtime/providerSkills";
 import type {
   EnvironmentId,
-  EnvironmentMachineKind,
+  EnvironmentIcon,
   PullRequestContextMetadata,
   ScopedThreadRef,
   ServerProviderSkill,
@@ -53,7 +53,7 @@ export type ComposerCommandItem =
       readonly id: string;
       readonly type: "environment";
       readonly environmentId: EnvironmentId;
-      readonly machine: EnvironmentMachineKind;
+      readonly machine: EnvironmentIcon;
       readonly label: string;
       readonly description: string;
     }
@@ -136,7 +136,7 @@ function itemIcon(item: ComposerCommandItem): AppSymbolName | null {
     case "thread":
       return "text.bubble";
     case "environment":
-      return ENVIRONMENT_MACHINE_SYMBOLS[item.machine];
+      return item.machine === "none" ? null : ENVIRONMENT_MACHINE_SYMBOLS[item.machine];
   }
 }
 

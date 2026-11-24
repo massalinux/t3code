@@ -26,7 +26,7 @@ import { UsageLimitSourceId } from "./usageLimitSourceId.ts";
 import { UsageModelFilter } from "./usage.ts";
 import { SecretProviderId, SecretProviderSlug } from "./secretReference.ts";
 import { containsSecretReference, SettingsSecretValue } from "./settingsSecretValue.ts";
-import { EnvironmentMachineKind, ThreadEnvMode, WorktreeSubmodules } from "./environment.ts";
+import { EnvironmentIcon, ThreadEnvMode, WorktreeSubmodules } from "./environment.ts";
 import { KeybindingShortcut } from "./keybindings.ts";
 import {
   CustomModelSetting,
@@ -1542,7 +1542,7 @@ export const ServerSettings = Schema.Struct({
   defaultAppearanceSetAt: Schema.String.check(Schema.isMaxLength(64)).pipe(
     Schema.withDecodingDefault(Effect.succeed("")),
   ),
-  environmentIcon: ForwardCompatibleNullable(EnvironmentMachineKind).pipe(
+  environmentIcon: ForwardCompatibleNullable(EnvironmentIcon).pipe(
     Schema.withDecodingDefault(Effect.succeed(null)),
   ),
   /** Null inherits t3.json, then local; omit it on the wire for older clients requiring a literal. */
@@ -1964,7 +1964,7 @@ export const ServerSettingsPatch = Schema.Struct({
   defaultThemeSetAt: Schema.optionalKey(Schema.String.check(Schema.isMaxLength(64))),
   defaultAppearance: Schema.optionalKey(DefaultAppearancePreference),
   defaultAppearanceSetAt: Schema.optionalKey(Schema.String.check(Schema.isMaxLength(64))),
-  environmentIcon: Schema.optionalKey(Schema.NullOr(EnvironmentMachineKind)),
+  environmentIcon: Schema.optionalKey(Schema.NullOr(EnvironmentIcon)),
   defaultThreadEnvMode: Schema.optionalKey(Schema.NullOr(ThreadEnvMode)),
   newWorktreesStartFromOrigin: Schema.optionalKey(Schema.Boolean),
   worktreeSubmodules: Schema.optionalKey(Schema.NullOr(WorktreeSubmodules)),

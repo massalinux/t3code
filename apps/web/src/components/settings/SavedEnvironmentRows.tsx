@@ -13,7 +13,7 @@ import {
   type EnvironmentId,
   connectReachabilityHelpUrl,
   formatConnectReachable,
-  resolveEnvironmentMachineKind,
+  resolveEnvironmentIcon,
 } from "@t3tools/contracts";
 import {
   connectionRoutes,
@@ -227,7 +227,7 @@ export function SavedBackendListRow({
     relayHttpBaseUrl: discoveredRelayHttpBaseUrl ?? lastRelayHttpBaseUrl,
     connectedTarget,
   });
-  const machineKind = resolveEnvironmentMachineKind(
+  const machineKind = resolveEnvironmentIcon(
     environment.serverConfig ??
       (lastDescriptor === undefined ? null : { environment: lastDescriptor }),
   );

@@ -25,7 +25,12 @@ import { useNowMinute } from "../hooks/useNowMinute";
 import { __setClientSettingsForTests, getClientSettings } from "../hooks/useSettings";
 import { useThreadRouteTarget } from "../hooks/useThreadRouteTarget";
 import { useProjects, useServerConfigs, useQuietThreadShells } from "../state/entities";
-import { useConnectedEnvironmentIds, usePrimaryEnvironmentId } from "../state/environments";
+import {
+  useConnectedEnvironmentIds,
+  useEnvironmentIdentities,
+  useEnvironmentMachines,
+  usePrimaryEnvironmentId,
+} from "../state/environments";
 import { readEnvironmentScope, useEnvironmentScope } from "../state/session";
 import { useOrchestrationCommand } from "../state/use-orchestration-command";
 import { useTerminalUiStateStore } from "../terminalUiStateStore";
@@ -263,6 +268,70 @@ function threadShell(projectId: ProjectId, index: number): EnvironmentThreadShel
     title: `Thread ${index}`,
   });
 }
+
+describe("sidebar machine icons", () => {
+  it("shows the local machine icon without adding a line for its name", async () => {
+    using stack = new DisposableStack();
+    const previousSettings = getClientSettings();
+    stack.defer(() => __setClientSettingsForTests(previousSettings));
+    stack.defer(() => {
+      vi.mocked(useEnvironmentIdentities).mockReset();
+      vi.mocked(useEnvironmentMachines).mockReset();
+    });
+    __setClientSettingsForTests({ ...DEFAULT_CLIENT_SETTINGS, boringSidebarEnabled: false });
+    const local = project("local-project");
+    const remote = { ...project("remote-project"), environmentId: EnvironmentId.make("remote") };
+    const localThread = threadShell(local.id, 0);
+    const remoteThread = { ...threadShell(remote.id, 1), environmentId: remote.environmentId };
+    const threadRef = scopeThreadRef(local.environmentId, localThread.id);
+    vi.mocked(useProjects).mockReturnValue([local, remote]);
+    vi.mocked(useConnectedEnvironmentIds).mockReturnValue([
+      local.environmentId,
+      remote.environmentId,
+    ]);
+    vi.mocked(usePrimaryEnvironmentId).mockReturnValue(local.environmentId);
+    vi.mocked(useEnvironmentIdentities).mockReturnValue([
+      { environmentId: local.environmentId, label: "Local machine" },
+      { environmentId: remote.environmentId, label: "Remote machine" },
+    ]);
+    vi.mocked(useEnvironmentMachines).mockReturnValue(
+      new Map([
+        [local.environmentId, "laptop"],
+        [remote.environmentId, "cloud"],
+      ]),
+    );
+    vi.mocked(useQuietThreadShells).mockReturnValue([localThread, remoteThread]);
+    vi.mocked(useThreadRouteTarget).mockReturnValue({ kind: "server", threadRef });
+
+    await using screen = await render(
+      <SidebarProvider>
+        <Sidebar routeReveal={{ observedKey: null, pendingKey: null }} />
+      </SidebarProvider>,
+    );
+
+    const localRow = screen.getByRole("button", { name: /^Thread 0,/ });
+    const remoteRow = screen.getByRole("button", { name: /^Thread 1,/ });
+    await expect.element(localRow).toBeVisible();
+    expect(localRow.element()).not.toHaveTextContent("Local machine");
+    await expect.element(remoteRow.getByText("Remote machine")).toBeVisible();
+    expect(localRow.element().querySelector("svg.lucide-laptop")).toBeInTheDocument();
+    expect(remoteRow.element().querySelector("svg.lucide-cloud")).toBeInTheDocument();
+
+    vi.mocked(useEnvironmentMachines).mockReturnValue(
+      new Map([
+        [local.environmentId, "none"],
+        [remote.environmentId, "cloud"],
+      ]),
+    );
+    await screen.rerender(
+      <SidebarProvider>
+        <Sidebar routeReveal={{ observedKey: null, pendingKey: null }} />
+      </SidebarProvider>,
+    );
+    expect(localRow.element().querySelector("svg.text-icon-muted")).not.toBeInTheDocument();
+    expect(remoteRow.element().querySelector("svg.lucide-cloud")).toBeInTheDocument();
+  });
+});
 
 describe("sidebar render isolation", () => {
   // regression: #33100 Cmd+J re-rendered every sidebar row, which took hundreds of ms with many threads

@@ -1,9 +1,13 @@
 import { thrownErrorMessage } from "@t3tools/client-runtime/errors";
+import { resolveEnvironmentIcon } from "@t3tools/contracts";
 import { m } from "~/i18n/messages";
+import type { EnvironmentPresentation } from "~/state/environments";
 import { T, useGT } from "gt-react";
+import { EllipsisIcon } from "lucide-react";
 import { useState } from "react";
 
 import { isLocalEnvironmentDisabled } from "../../localEnvironment";
+import { EnvironmentMachineIcon } from "../EnvironmentMachineIcon";
 import {
   AlertDialog,
   AlertDialogClose,
@@ -14,13 +18,19 @@ import {
   AlertDialogTitle,
 } from "../ui/alert-dialog";
 import { Button } from "../ui/button";
+import { Menu, MenuPopup, MenuTrigger } from "../ui/menu";
 import { Spinner } from "../ui/spinner";
 import { Switch } from "../ui/switch";
+import { EnvironmentIconMenu } from "./EnvironmentIconPicker";
 import { SettingsRow } from "./settingsLayout";
 import { useSearchableSetting } from "./settingsSearch";
 
 // Toggling relaunches desktop; the switch reflects startup state.
-export function LocalEnvironmentSetting() {
+export function LocalEnvironmentSetting({
+  environment,
+}: {
+  readonly environment: Pick<EnvironmentPresentation, "environmentId" | "serverConfig"> | null;
+}) {
   const searchableSetting = useSearchableSetting();
   const gt = useGT();
   const setEnabled = window.desktopBridge?.setLocalEnvironmentEnabled;
@@ -30,6 +40,8 @@ export function LocalEnvironmentSetting() {
   const [error, setError] = useState<string | null>(null);
   if (!setEnabled) return null;
 
+  const setting = searchableSetting("local-environment");
+  const serverConfig = environment?.serverConfig ?? null;
   const applyChange = async () => {
     setIsUpdating(true);
     setError(null);
@@ -48,7 +60,19 @@ export function LocalEnvironmentSetting() {
   return (
     <>
       <SettingsRow
-        {...searchableSetting("local-environment")}
+        {...setting}
+        title={
+          <span className="inline-flex items-center gap-2">
+            {enabled ? (
+              <EnvironmentMachineIcon
+                aria-hidden
+                kind={serverConfig ? resolveEnvironmentIcon(serverConfig) : "desktop"}
+                className="size-3.5 shrink-0 text-muted-foreground"
+              />
+            ) : null}
+            {setting.title}
+          </span>
+        }
         description={
           enabled
             ? gt(
@@ -57,12 +81,36 @@ export function LocalEnvironmentSetting() {
             : gt("Turned off. Agents only run in remote environments.")
         }
         control={
-          <Switch
-            checked={enabled}
-            disabled={isUpdating}
-            onCheckedChange={() => setConfirmOpen(true)}
-            aria-label={gt("Local environment")}
-          />
+          <div className="flex items-center gap-1">
+            <Switch
+              checked={enabled}
+              disabled={isUpdating}
+              onCheckedChange={() => setConfirmOpen(true)}
+              aria-label={setting.title}
+            />
+            {enabled && environment ? (
+              <Menu>
+                <MenuTrigger
+                  render={
+                    <Button
+                      type="button"
+                      variant="ghost-muted"
+                      size="icon-xs"
+                      aria-label={gt("More actions for {label}", { label: setting.title })}
+                    />
+                  }
+                >
+                  <EllipsisIcon className="size-3.5" />
+                </MenuTrigger>
+                <MenuPopup align="end">
+                  <EnvironmentIconMenu
+                    environmentId={environment.environmentId}
+                    serverConfig={serverConfig}
+                  />
+                </MenuPopup>
+              </Menu>
+            ) : null}
+          </div>
         }
       />
       <AlertDialog

@@ -5,6 +5,7 @@ import { ExecutionEnvironmentDescriptor } from "./environment.ts";
 import {
   applyServerProviderDeltas,
   OtlpEndpointCheckInput,
+  resolveEnvironmentIcon,
   resolveEnvironmentMachineKind,
   ServerConfigProviderStatusDeltasPayload,
   ServerObservability,
@@ -144,6 +145,16 @@ describe("resolveEnvironmentMachineKind", () => {
         settings: decodeSettings({ environmentIcon: "laptop" }),
       }),
     ).toBe("laptop");
+  });
+
+  it("suppresses the icon while preserving the detected machine kind", () => {
+    const config = {
+      environment: descriptor({ machine: "laptop" }),
+      settings: decodeSettings({ environmentIcon: "none" }),
+    };
+
+    expect(resolveEnvironmentIcon(config)).toBe("none");
+    expect(resolveEnvironmentMachineKind(config)).toBe("laptop");
   });
 
   it("drops a machine kind this build does not know instead of failing the descriptor", () => {

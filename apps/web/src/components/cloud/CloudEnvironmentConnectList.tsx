@@ -17,11 +17,7 @@ import {
   settlePromise,
   squashAtomCommandFailure,
 } from "@t3tools/client-runtime/state/runtime";
-import {
-  type EnvironmentId,
-  resolveEnvironmentMachineKind,
-  type ServerConfig,
-} from "@t3tools/contracts";
+import { type EnvironmentId, resolveEnvironmentIcon, type ServerConfig } from "@t3tools/contracts";
 import type {
   RelayClientEnvironmentRecord,
   RelayEnvironmentStatusResponse,
@@ -362,7 +358,7 @@ export function CloudEnvironmentConnectRows({
       availability === "offline" && relayStatus !== null
         ? relayOfflineReasonMessage(relayStatus, m)
         : null;
-    const machineKind = resolveEnvironmentMachineKind(
+    const machineKind = resolveEnvironmentIcon(
       savedEnvironment?.serverConfig ??
         (descriptor === undefined ? null : { environment: descriptor }),
     );

@@ -1,4 +1,4 @@
-import type { EnvironmentId, EnvironmentMachineKind } from "@t3tools/contracts";
+import type { EnvironmentId, EnvironmentIcon } from "@t3tools/contracts";
 import { useGT } from "gt-react";
 
 import type { SidebarProjectSnapshot } from "~/sidebarProjectGrouping";
@@ -8,7 +8,7 @@ import { Tooltip, TooltipPopup, TooltipTrigger } from "./ui/tooltip";
 export function ProjectEnvironmentBadge(props: {
   readonly group: Pick<SidebarProjectSnapshot, "memberProjects">;
   readonly primaryEnvironmentId: EnvironmentId | null;
-  readonly machineByEnvironmentId: ReadonlyMap<EnvironmentId, EnvironmentMachineKind>;
+  readonly machineByEnvironmentId: ReadonlyMap<EnvironmentId, EnvironmentIcon>;
 }) {
   const gt = useGT();
   const remoteMembers = props.group.memberProjects
@@ -18,7 +18,9 @@ export function ProjectEnvironmentBadge(props: {
       environmentLabel: member.environmentLabel ?? gt("Remote", { $context: "machine location" }),
     }))
     .sort((a, b) => a.environmentLabel.localeCompare(b.environmentLabel));
-  const first = remoteMembers[0];
+  const first = remoteMembers.find(
+    (member) => props.machineByEnvironmentId.get(member.environmentId) !== "none",
+  );
   if (!first) return null;
   const labels = remoteMembers
     .map((member) => member.environmentLabel)

@@ -1,7 +1,7 @@
 import {
   isListedThreadLineage,
   type EnvironmentId,
-  type EnvironmentMachineKind,
+  type EnvironmentIcon,
   type ScopedThreadRef,
   type ThreadId,
 } from "@t3tools/contracts";
@@ -89,14 +89,14 @@ export function matchComposerThreadItems(
 export interface ComposerEnvironmentCandidate {
   readonly environmentId: EnvironmentId;
   readonly label: string;
-  readonly machine: EnvironmentMachineKind;
+  readonly machine: EnvironmentIcon;
 }
 
 export interface ComposerEnvironmentItem {
   readonly id: string;
   readonly type: "environment";
   readonly environmentId: EnvironmentId;
-  readonly machine: EnvironmentMachineKind;
+  readonly machine: EnvironmentIcon;
   readonly label: string;
   readonly description: string;
 }

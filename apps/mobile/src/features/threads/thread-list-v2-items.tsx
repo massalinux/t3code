@@ -28,7 +28,7 @@ import {
 import {
   AuthOrchestrationOperateScope,
   type EnvironmentId,
-  type EnvironmentMachineKind,
+  type EnvironmentIcon,
 } from "@t3tools/contracts";
 import { toServerClock } from "@t3tools/client-runtime/clock";
 import type { SnoozePresetSetting } from "@t3tools/contracts/settings";
@@ -457,7 +457,7 @@ export const ThreadListV2PendingRow = memo(function ThreadListV2PendingRow(props
   readonly selected?: boolean;
   readonly project: EnvironmentProject | null;
   readonly environmentLabel: string | null;
-  readonly environmentMachine?: EnvironmentMachineKind;
+  readonly environmentMachine?: EnvironmentIcon;
   readonly pane?: "screen" | "sidebar";
   readonly showPendingDivider: boolean;
   readonly showTrailingDivider?: boolean;
@@ -756,7 +756,7 @@ export const ThreadListV2Row = memo(function ThreadListV2Row(props: {
   readonly providers: ReadonlyArray<ThreadListProvider> | undefined;
   readonly providerInstance: ThreadRowProviderInstance | null;
   readonly environmentLabel: string | null;
-  readonly environmentMachine?: EnvironmentMachineKind;
+  readonly environmentMachine?: EnvironmentIcon;
   readonly pane?: "screen" | "sidebar";
   readonly showTrailingDivider?: boolean;
   readonly selected?: boolean;

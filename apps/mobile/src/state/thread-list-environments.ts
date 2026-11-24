@@ -1,7 +1,7 @@
 import {
-  resolveEnvironmentMachineKind,
+  resolveEnvironmentIcon,
   type EnvironmentId,
-  type EnvironmentMachineKind,
+  type EnvironmentIcon,
   type ServerConfig,
   type ServerProvider,
 } from "@t3tools/contracts";
@@ -27,7 +27,7 @@ function selectEnvironment(config: ServerConfig, isConnected: boolean) {
         iconUrl,
       }),
     ),
-    machineKind: resolveEnvironmentMachineKind(config),
+    machineKind: resolveEnvironmentIcon(config),
     capabilities: config.environment.capabilities,
     snoozePresets: config.settings.snoozePresets,
   };
@@ -57,7 +57,7 @@ function sameProviders(
 
 function collectEnvironments(environments: ReadonlyMap<EnvironmentId, ListEnvironment>) {
   const providersByEnvironmentId = new Map<EnvironmentId, ReadonlyArray<ThreadListProvider>>();
-  const machineByEnvironmentId = new Map<EnvironmentId, EnvironmentMachineKind>();
+  const machineByEnvironmentId = new Map<EnvironmentId, EnvironmentIcon>();
   // Every protocol-2 server supports these thread actions; they only wait for its config.
   const loadedEnvironmentIds = new Set<EnvironmentId>();
   const autoSettleOptOutEnvironmentIds = new Set<EnvironmentId>();

@@ -6,7 +6,7 @@ import {
 } from "@t3tools/client-runtime/providerSkills";
 import {
   type EnvironmentId,
-  type EnvironmentMachineKind,
+  type EnvironmentIcon,
   type ProjectEntry,
   type ProviderDriverKind,
   type ProviderInstanceId,
@@ -89,7 +89,7 @@ export type ComposerCommandItem =
       id: string;
       type: "environment";
       environmentId: EnvironmentId;
-      machine: EnvironmentMachineKind;
+      machine: EnvironmentIcon;
       label: string;
       description: string;
     }

@@ -2,6 +2,7 @@ import * as Effect from "effect/Effect";
 import * as Schema from "effect/Schema";
 import { AcpRegistryUrlAuthAction } from "./acpRegistry.ts";
 import {
+  type EnvironmentIcon,
   type EnvironmentMachineKind,
   ExecutionEnvironmentDescriptor,
   ServerSelfUpdateMethod,
@@ -776,13 +777,20 @@ export const ServerConfig = Schema.Struct({
 });
 export type ServerConfig = typeof ServerConfig.Type;
 
-export function resolveEnvironmentMachineKind(
-  config: {
-    readonly environment: Pick<ExecutionEnvironmentDescriptor, "platform">;
-    readonly settings?: Pick<ServerSettings, "environmentIcon">;
-  } | null,
-): EnvironmentMachineKind {
+type EnvironmentIconConfig = {
+  readonly environment: Pick<ExecutionEnvironmentDescriptor, "platform">;
+  readonly settings?: Pick<ServerSettings, "environmentIcon">;
+};
+
+export function resolveEnvironmentIcon(config: EnvironmentIconConfig | null): EnvironmentIcon {
   return config?.settings?.environmentIcon ?? config?.environment.platform.machine ?? "server";
+}
+
+export function resolveEnvironmentMachineKind(
+  config: EnvironmentIconConfig | null,
+): EnvironmentMachineKind {
+  const icon = resolveEnvironmentIcon(config);
+  return icon === "none" ? (config?.environment.platform.machine ?? "server") : icon;
 }
 
 const ServerUpsertKeybindingReplaceTarget = Schema.Struct({

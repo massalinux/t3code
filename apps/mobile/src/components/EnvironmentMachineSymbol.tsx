@@ -1,4 +1,4 @@
-import type { EnvironmentMachineKind } from "@t3tools/contracts";
+import type { EnvironmentIcon, EnvironmentMachineKind } from "@t3tools/contracts";
 import { msg, useMessages } from "gt-react-native";
 
 import { SymbolView, type AppSymbolName } from "./ui/AppSymbol";
@@ -24,11 +24,12 @@ const ENVIRONMENT_MACHINE_KIND_LABELS: Record<EnvironmentMachineKind, string> = 
 };
 
 export function EnvironmentMachineSymbol(props: {
-  readonly kind: EnvironmentMachineKind;
+  readonly kind: EnvironmentIcon;
   readonly size: number;
   readonly tintColorClassName: string;
 }) {
   const m = useMessages();
+  if (props.kind === "none") return null;
   return (
     <SymbolView
       accessibilityLabel={m(ENVIRONMENT_MACHINE_KIND_LABELS[props.kind])}

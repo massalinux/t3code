@@ -1,8 +1,8 @@
 import {
   AuthSettingsWriteScope,
   ENVIRONMENT_MACHINE_KINDS,
-  isEnvironmentMachineKind,
-  resolveEnvironmentMachineKind,
+  isEnvironmentIcon,
+  resolveEnvironmentIcon,
   type EnvironmentId,
   type ServerConfig,
 } from "@t3tools/contracts";
@@ -43,7 +43,7 @@ export function EnvironmentIconMenu({
   serverConfig,
 }: {
   readonly environmentId: EnvironmentId;
-  readonly serverConfig: Pick<ServerConfig, "environment"> | null;
+  readonly serverConfig: Pick<ServerConfig, "environment" | "settings"> | null;
 }) {
   const gt = useGT();
   const resolve = useMessages();
@@ -53,7 +53,8 @@ export function EnvironmentIconMenu({
     : "denied";
   const lock = resolveEnvironmentIconPickerLock({ serverConfig, operateAccess }, resolve);
   const detected = serverConfig?.environment.platform.machine ?? "server";
-  const resolved = resolveEnvironmentMachineKind(serverConfig);
+  const resolved = resolveEnvironmentIcon(serverConfig);
+  const supportsNoIcon = serverConfig?.environment.capabilities.environmentIconNone === true;
 
   return (
     <MenuSub>
@@ -73,7 +74,8 @@ export function EnvironmentIconMenu({
         <MenuRadioGroup
           value={resolved}
           onValueChange={(next) => {
-            if (lock !== null || !isEnvironmentMachineKind(next)) return;
+            if (lock !== null || !isEnvironmentIcon(next) || (next === "none" && !supportsNoIcon))
+              return;
             updateSettings({ environmentIcon: next === detected ? null : next });
           }}
         >
@@ -94,6 +96,11 @@ export function EnvironmentIconMenu({
               </span>
             </MenuRadioItem>
           ))}
+          {supportsNoIcon ? (
+            <MenuRadioItem value="none" disabled={lock !== null}>
+              <T>No icon</T>
+            </MenuRadioItem>
+          ) : null}
         </MenuRadioGroup>
       </MenuSubPopup>
     </MenuSub>

@@ -4,7 +4,7 @@ import {
   connectionRouteLabelText,
   connectionRoutes,
 } from "@t3tools/client-runtime/connection";
-import type { DesktopSshEnvironmentTarget, EnvironmentMachineKind } from "@t3tools/contracts";
+import type { DesktopSshEnvironmentTarget, EnvironmentIcon } from "@t3tools/contracts";
 import * as Option from "effect/Option";
 import { msg, useMessages } from "gt-react";
 import type { ReactNode } from "react";
@@ -82,7 +82,7 @@ export function EnvironmentRow({
   className,
   children,
 }: {
-  readonly kind: EnvironmentMachineKind;
+  readonly kind: EnvironmentIcon;
   readonly label: string;
   readonly subtitle: ReactNode;
   readonly below?: ReactNode;
@@ -104,12 +104,12 @@ export function EnvironmentRow({
         kind={kind}
         className={cn("size-4 text-muted-foreground", dimmed && "opacity-60")}
       />
-      <div className={cn("min-w-0", dimmed && "opacity-60")}>
+      <div className={cn("col-start-2 row-start-1 min-w-0", dimmed && "opacity-60")}>
         <p className="truncate text-sm font-medium text-foreground">{label}</p>
         <div className="truncate text-xs text-muted-foreground">{subtitle}</div>
         {below}
       </div>
-      <div className="flex shrink-0 items-center gap-1">{children}</div>
+      <div className="col-start-3 row-start-1 flex shrink-0 items-center gap-1">{children}</div>
       {detail ? <div className="col-span-2 col-start-2 min-w-0">{detail}</div> : null}
     </div>
   );

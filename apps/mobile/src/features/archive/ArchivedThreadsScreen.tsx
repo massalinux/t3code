@@ -8,8 +8,8 @@ import { LegendList } from "@legendapp/list/react-native";
 import {
   AuthOrchestrationOperateScope,
   type EnvironmentId,
-  type EnvironmentMachineKind,
-  resolveEnvironmentMachineKind,
+  type EnvironmentIcon,
+  resolveEnvironmentIcon,
 } from "@t3tools/contracts";
 import { useNavigation } from "@react-navigation/native";
 import { AppActivityIndicator } from "../../components/ui/AppActivityIndicator";
@@ -125,7 +125,7 @@ type ArchivedThreadListItem =
       readonly kind: "project";
       readonly key: string;
       readonly environmentLabel: string | null;
-      readonly environmentMachine: EnvironmentMachineKind;
+      readonly environmentMachine: EnvironmentIcon;
       readonly project: EnvironmentProject;
     }
   | {
@@ -139,7 +139,7 @@ type ArchivedThreadListItem =
 
 function ProjectGroupLabel(props: {
   readonly environmentLabel: string | null;
-  readonly environmentMachine: EnvironmentMachineKind;
+  readonly environmentMachine: EnvironmentIcon;
   readonly project: EnvironmentProject;
 }) {
   return (
@@ -322,7 +322,7 @@ export function ArchivedThreadsScreen(props: {
         kind: "project",
         key: `${group.key}:project`,
         environmentLabel,
-        environmentMachine: resolveEnvironmentMachineKind(
+        environmentMachine: resolveEnvironmentIcon(
           serverConfigs.get(group.project.environmentId) ?? null,
         ),
         project: group.project,
